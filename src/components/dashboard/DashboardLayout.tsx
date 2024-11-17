@@ -1,21 +1,29 @@
-import React, { useState, useCallback, useMemo } from 'react'
-import { CancellationsChart } from './charts/CancellationsChart'
-import { CommissionsChart } from './charts/CommissionsChart'
-import { ArrivalsChart } from './charts/ArrivalsChart'
-import { CSVUploader } from './CSVUploader'
-import { ExportTools } from './ExportTools'
-import { DateRangePicker } from './DateRangePicker'
-import { TopAccommodationsTable } from './TopAccommodationsTable'
-import { TopCitiesTable } from './TopCitiesTable';
-import { startOfDay, endOfDay, isWithinInterval } from 'date-fns'
-import { CurrencyEuroIcon, BanknotesIcon, ClipboardDocumentListIcon, XCircleIcon } from '@heroicons/react/24/outline';
-import { KPICard } from './KPICard';
-import { formatCurrency, formatPercentage } from '../../utils/formatters';
+import React, { useState, useMemo } from 'react';
 import { BookingData } from '../../types/booking';
-import { DataTable } from './DataTable'
-import { KPICards } from './KPICards'
+import { DataTable } from './DataTable';
+import { TopAccommodationsTable } from './TopAccommodationsTable';
+import { TopCitiesTable } from './TopCitiesTable';
+import { CSVUploader } from './CSVUploader';
+import { DateRangePicker } from './DateRangePicker';
 import { YearComparisonPicker } from './YearComparisonPicker';
 import { FilterToggle } from './FilterToggle';
+import { ExportTools } from './ExportTools';
+import { KPICards } from './KPICards';
+import { formatCurrency, formatPercentage } from '../../utils/formatters';
+import { startOfDay, endOfDay, isWithinInterval } from 'date-fns';
+import { CurrencyEuroIcon, BanknotesIcon, ClipboardDocumentListIcon, XCircleIcon } from '@heroicons/react/24/outline';
+
+interface DataTableProps {
+  data: BookingData[];
+  comparisonData?: BookingData[];
+}
+
+interface ExportToolsProps {
+  data: BookingData[];
+  comparisonData?: BookingData[];
+  year1?: number;
+  year2?: number;
+}
 
 export function DashboardLayout() {
   const [data, setData] = useState<BookingData[]>([]);
@@ -98,10 +106,10 @@ export function DashboardLayout() {
     });
   }, [data, selectedYear2, isYearComparison, selectedRegion]);
 
-  const handleYearChange = useCallback((year1: number, year2: number) => {
+  const handleYearChange = (year1: number, year2: number) => {
     setSelectedYear1(year1);
     setSelectedYear2(year2);
-  }, []);
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -170,16 +178,10 @@ export function DashboardLayout() {
           {!isYearComparison && (
             <div className="grid grid-cols-1 gap-6 mb-6">
               <div className="bg-white rounded-lg shadow">
-                <CommissionsChart
-                  data={filteredData}
-                  dateRange={dateRange}
-                />
+                {/* CommissionsChart */}
               </div>
               <div className="bg-white rounded-lg shadow">
-                <ArrivalsChart
-                  data={filteredData}
-                  dateRange={dateRange}
-                />
+                {/* ArrivalsChart */}
               </div>
             </div>
           )}

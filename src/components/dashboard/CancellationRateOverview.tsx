@@ -1,14 +1,10 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { BookingData } from '../../types/booking';
-import { formatCurrency, formatPercentage } from '../../utils/formatters';
+import { formatPercentage } from '../../utils/formatters';
 
 interface CancellationRateOverviewProps {
   data: BookingData[];
   comparisonData?: BookingData[];
-  startDate: Date;
-  endDate: Date;
-  comparisonStartDate?: Date;
-  comparisonEndDate?: Date;
 }
 
 interface CancellationStats {
@@ -20,14 +16,7 @@ interface CancellationStats {
   commissionLossRate: number;
 }
 
-export function CancellationRateOverview({
-  data,
-  comparisonData,
-  startDate,
-  endDate,
-  comparisonStartDate,
-  comparisonEndDate,
-}: CancellationRateOverviewProps) {
+export function CancellationRateOverview({ data, comparisonData }: CancellationRateOverviewProps) {
   const stats = useMemo(() => {
     const calculateStats = (bookings: BookingData[]): CancellationStats => {
       const totalBookings = bookings.length;
@@ -110,7 +99,7 @@ export function CancellationRateOverview({
             )}
           </div>
           <div className="mt-1 text-sm text-gray-500">
-            {formatCurrency(stats.current.cancelledCommission)} von {formatCurrency(stats.current.totalCommission + stats.current.cancelledCommission)}
+            {stats.current.cancelledCommission} von {stats.current.totalCommission + stats.current.cancelledCommission}
           </div>
         </div>
 

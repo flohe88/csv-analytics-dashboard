@@ -60,13 +60,13 @@ export function DataTable({ data }: DataTableProps) {
       },
       {
         accessorKey: 'totalPrice',
-        header: 'Gesamtpreis',
+        header: 'Preis',
         cell: (info) =>
           new Intl.NumberFormat('de-DE', {
             style: 'currency',
             currency: 'EUR',
           }).format(info.getValue() as number),
-        sortingFn: 'number',
+        sortingFn: 'alphanumeric',
       },
       {
         accessorKey: 'adults',
@@ -121,7 +121,7 @@ export function DataTable({ data }: DataTableProps) {
             style: 'currency',
             currency: 'EUR',
           }).format(info.getValue() as number),
-        sortingFn: 'number',
+        sortingFn: 'alphanumeric',
       },
     ],
     []
