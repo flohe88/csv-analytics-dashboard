@@ -1,5 +1,4 @@
-import React from 'react';
-import { Line } from 'react-chartjs-2';
+import { useMemo } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -9,9 +8,12 @@ import {
   Title,
   Tooltip,
   Legend,
+  ChartData,
+  ChartOptions,
 } from 'chart.js';
+import { Line } from 'react-chartjs-2';
 import { BookingData } from '../../../types/booking';
-import { startOfMonth, format, isWithinInterval } from 'date-fns';
+import { startOfMonth, endOfMonth, format } from 'date-fns';
 import { de } from 'date-fns/locale';
 
 ChartJS.register(
@@ -26,57 +28,61 @@ ChartJS.register(
 
 interface CancellationRateChartProps {
   data: BookingData[];
-  dateRange: {
-    start: Date | null;
-    end: Date | null;
-  };
+  startDate: Date;
+  endDate: Date;
 }
 
-export function CancellationRateChart({ data, dateRange }: CancellationRateChartProps) {
-  const monthlyCancellationRates = React.useMemo(() => {
-    if (!dateRange.start || !dateRange.end || data.length === 0) return [];
-
+export function CancellationRateChart({
+  data,
+  startDate,
+  endDate,
+}: CancellationRateChartProps) {
+  const chartData = useMemo(() => {
+    // Gruppiere die Daten nach Monaten
     const monthlyData = new Map<string, { total: number; cancelled: number }>();
 
-    // Filter data within date range and group by month
     data.forEach((booking) => {
-      const bookingDate = new Date(booking.arrivalDate);
-      if (isWithinInterval(bookingDate, { start: dateRange.start, end: dateRange.end })) {
-        const monthKey = format(startOfMonth(bookingDate), 'yyyy-MM');
+      const bookingDate = new Date(booking.bookingDate);
+      if (bookingDate >= startDate && bookingDate <= endDate) {
+        const monthKey = format(bookingDate, 'yyyy-MM');
         const current = monthlyData.get(monthKey) || { total: 0, cancelled: 0 };
-        
-        current.total += 1;
+
+        current.total++;
         if (booking.cancelled) {
-          current.cancelled += 1;
+          current.cancelled++;
         }
-        
+
         monthlyData.set(monthKey, current);
       }
     });
 
-    // Convert to array and sort by date
-    return Array.from(monthlyData.entries())
-      .sort((a, b) => a[0].localeCompare(b[0]))
-      .map(([month, stats]) => ({
-        month: format(new Date(month), 'MMM yyyy', { locale: de }),
-        rate: (stats.cancelled / stats.total) * 100,
-      }));
-  }, [data, dateRange]);
+    // Sortiere die Daten chronologisch
+    const sortedMonths = Array.from(monthlyData.keys()).sort();
 
-  const chartData = {
-    labels: monthlyCancellationRates.map((item) => item.month),
-    datasets: [
-      {
-        label: 'Stornierungsrate (%)',
-        data: monthlyCancellationRates.map((item) => item.rate),
-        borderColor: 'rgb(255, 99, 132)',
-        backgroundColor: 'rgba(255, 99, 132, 0.5)',
-        tension: 0.3,
-      },
-    ],
-  };
+    const cancellationRates = sortedMonths.map((month) => {
+      const { total, cancelled } = monthlyData.get(month)!;
+      return (cancelled / total) * 100;
+    });
 
-  const options = {
+    const labels = sortedMonths.map((month) =>
+      format(new Date(month), 'MMM yyyy', { locale: de })
+    );
+
+    return {
+      labels,
+      datasets: [
+        {
+          label: 'Stornierungsrate',
+          data: cancellationRates,
+          borderColor: 'rgb(75, 192, 192)',
+          backgroundColor: 'rgba(75, 192, 192, 0.5)',
+          tension: 0.3,
+        },
+      ],
+    };
+  }, [data, startDate, endDate]);
+
+  const options: ChartOptions<'line'> = {
     responsive: true,
     plugins: {
       legend: {
@@ -84,25 +90,22 @@ export function CancellationRateChart({ data, dateRange }: CancellationRateChart
       },
       title: {
         display: true,
-        text: 'Stornierungsrate',
+        text: 'Stornierungsrate im Zeitverlauf',
       },
     },
     scales: {
       y: {
-        type: 'linear' as const,
         beginAtZero: true,
         ticks: {
-          callback: function(value: number | string) {
-            return value + '%';
-          }
-        }
-      }
-    }
+          callback: (value) => `${value}%`,
+        },
+      },
+    },
   };
 
   return (
     <div className="p-4">
-      <Line data={chartData} options={options} />
+      <Line options={options} data={chartData} />
     </div>
   );
 }

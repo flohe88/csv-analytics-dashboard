@@ -7,9 +7,9 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { de } from 'date-fns/locale';
 
 interface DateRangePickerProps {
-  startDate: Date;
-  endDate: Date;
-  onDateChange: (start: Date, end: Date) => void;
+  startDate: Date | null;
+  endDate: Date | null;
+  onDateChange: (start: Date | null, end: Date | null) => void;
   data: BookingData[];
   selectedRegion: string;
   onRegionChange: (region: string) => void;
@@ -50,7 +50,7 @@ export function DateRangePicker({
               </label>
               <DatePicker
                 selected={startDate}
-                onChange={(date) =>
+                onChange={(date: Date | null) =>
                   onDateChange(date, endDate)
                 }
                 selectsStart
@@ -71,7 +71,7 @@ export function DateRangePicker({
               </label>
               <DatePicker
                 selected={endDate}
-                onChange={(date) =>
+                onChange={(date: Date | null) =>
                   onDateChange(startDate, date)
                 }
                 selectsEnd
