@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { BookingData } from '../../types/booking';
 import { DataTable } from './DataTable';
 import { TopAccommodationsTable } from './TopAccommodationsTable';
@@ -12,18 +12,6 @@ import { KPICards } from './KPICards';
 import { formatCurrency, formatPercentage } from '../../utils/formatters';
 import { startOfDay, endOfDay, isWithinInterval } from 'date-fns';
 import { CurrencyEuroIcon, BanknotesIcon, ClipboardDocumentListIcon, XCircleIcon } from '@heroicons/react/24/outline';
-
-interface DataTableProps {
-  data: BookingData[];
-  comparisonData?: BookingData[];
-}
-
-interface ExportToolsProps {
-  data: BookingData[];
-  comparisonData?: BookingData[];
-  year1?: number;
-  year2?: number;
-}
 
 export function DashboardLayout() {
   const [data, setData] = useState<BookingData[]>([]);

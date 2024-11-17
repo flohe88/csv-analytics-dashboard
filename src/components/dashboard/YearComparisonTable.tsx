@@ -1,22 +1,16 @@
-import React from 'react';
+import { useMemo } from 'react';
 import { BookingData } from '../../types/booking';
-import { format, parse, startOfMonth, isSameMonth, differenceInDays } from 'date-fns';
-import { de } from 'date-fns/locale';
+import { format } from 'date-fns';
+import { formatCurrency, formatPercentage } from '../../utils/formatters';
 
 interface YearComparisonTableProps {
-  currentYearData: BookingData[];
-  previousYearData: BookingData[];
+  data: BookingData[];
+  comparisonData: BookingData[];
+  year1: number;
+  year2: number;
 }
 
-interface MonthlyStats {
-  revenue: number;
-  commission: number;
-  bookings: number;
-  nights: number;
-  cancellationRate: number;
-}
-
-export function YearComparisonTable({ currentYearData, previousYearData }: YearComparisonTableProps) {
+export function YearComparisonTable({ data, comparisonData, year1, year2 }: YearComparisonTableProps) {
   const calculateMonthlyStats = (data: BookingData[]): Record<string, MonthlyStats> => {
     const monthlyStats: Record<string, MonthlyStats> = {};
     
@@ -64,27 +58,9 @@ export function YearComparisonTable({ currentYearData, previousYearData }: YearC
     return monthlyStats;
   };
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('de-DE', {
-      style: 'currency',
-      currency: 'EUR',
-    }).format(value);
-  };
-
   const formatNumber = (value: number) => {
     return new Intl.NumberFormat('de-DE').format(value);
   };
-
-  const formatPercentage = (value: number) => {
-    return new Intl.NumberFormat('de-DE', {
-      style: 'percent',
-      minimumFractionDigits: 1,
-      maximumFractionDigits: 1,
-    }).format(value / 100);
-  };
-
-  const currentYearStats = calculateMonthlyStats(currentYearData);
-  const previousYearStats = calculateMonthlyStats(previousYearData);
 
   const calculateChange = (current: number, previous: number): string => {
     if (previous === 0) return '-';
@@ -100,6 +76,9 @@ export function YearComparisonTable({ currentYearData, previousYearData }: YearC
       name: format(date, 'MMMM', { locale: de }),
     };
   });
+
+  const currentYearStats = useMemo(() => calculateMonthlyStats(data), [data]);
+  const previousYearStats = useMemo(() => calculateMonthlyStats(comparisonData), [comparisonData]);
 
   return (
     <div className="overflow-x-auto">
@@ -183,4 +162,12 @@ export function YearComparisonTable({ currentYearData, previousYearData }: YearC
       </table>
     </div>
   );
+}
+
+interface MonthlyStats {
+  revenue: number;
+  commission: number;
+  bookings: number;
+  nights: number;
+  cancellationRate: number;
 }

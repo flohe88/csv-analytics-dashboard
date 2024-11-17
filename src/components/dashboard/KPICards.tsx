@@ -1,17 +1,14 @@
-import React from 'react';
-import { useMemo } from 'react'
-import { BookingData } from '../../types/booking'
-import { ArrowDownIcon, ArrowUpIcon } from '@heroicons/react/20/solid';
-import { differenceInDays, parse } from 'date-fns';
-import { de } from 'date-fns/locale';
+import { useMemo } from 'react';
+import { BookingData } from '../../types/booking';
+import { formatCurrency, formatPercentage } from '../../utils/formatters';
+import { CurrencyEuroIcon, BanknotesIcon, ClipboardDocumentListIcon, XCircleIcon } from '@heroicons/react/24/outline';
 
 interface KPICardsProps {
-  data: BookingData[]
-  isYearComparison: boolean
-  comparisonData?: BookingData[]
+  data: BookingData[];
+  comparisonData?: BookingData[];
 }
 
-export function KPICards({ data, isYearComparison, comparisonData }: KPICardsProps) {
+export function KPICards({ data, comparisonData }: KPICardsProps) {
   const stats = useMemo(() => {
     const totalBookings = data.length;
     const cancelledBookings = data.filter(booking => booking.cancelled).length;
@@ -54,17 +51,6 @@ export function KPICards({ data, isYearComparison, comparisonData }: KPICardsPro
     }
   }, [comparisonData]);
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('de-DE', {
-      style: 'currency',
-      currency: 'EUR',
-    }).format(value);
-  };
-
-  const formatNumber = (value: number) => {
-    return new Intl.NumberFormat('de-DE').format(value);
-  };
-
   const calculateChange = (current: number, previous?: number): string => {
     if (!previous) return '';
     const change = ((current - previous) / previous) * 100;
@@ -93,7 +79,7 @@ export function KPICards({ data, isYearComparison, comparisonData }: KPICardsPro
         <div className="text-2xl font-semibold text-gray-900">
           {formatter(value)}
         </div>
-        {isYearComparison && comparisonValue !== undefined && (
+        {comparisonData && comparisonValue !== undefined && (
           <div className="flex items-baseline">
             <div className="text-sm text-gray-500">Vorjahr: {formatter(comparisonValue)}</div>
             <div className={`ml-2 text-sm ${getChangeColor(value, comparisonValue)}`}>
@@ -139,7 +125,7 @@ export function KPICards({ data, isYearComparison, comparisonData }: KPICardsPro
         title="Stornierungsquote"
         value={stats.cancellationRate}
         comparisonValue={comparisonStats?.cancellationRate}
-        formatter={(value) => `${value.toFixed(1)}%`}
+        formatter={formatPercentage}
       />
     </div>
   );

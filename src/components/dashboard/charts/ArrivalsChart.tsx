@@ -25,8 +25,8 @@ ChartJS.register(
 interface ArrivalsChartProps {
   data: BookingData[];
   dateRange: {
-    start: Date | null;
-    end: Date | null;
+    start: Date;
+    end: Date;
   };
 }
 
@@ -46,21 +46,16 @@ export function ArrivalsChart({ data, dateRange }: ArrivalsChartProps) {
     if (data.length === 0) return [];
 
     const effectiveDateRange = {
-      start: dateRange.start || fullDateRange.start,
-      end: dateRange.end || fullDateRange.end
+      start: dateRange.start,
+      end: dateRange.end
     };
-
-    if (!effectiveDateRange.start || !effectiveDateRange.end) return [];
 
     const monthlyData = new Map<string, number>();
 
     // Filter data within date range and group by month
     data.forEach((booking) => {
       const bookingDate = new Date(booking.arrivalDate);
-      if (isWithinInterval(bookingDate, { 
-        start: effectiveDateRange.start, 
-        end: effectiveDateRange.end 
-      })) {
+      if (effectiveDateRange.start && effectiveDateRange.end && bookingDate >= effectiveDateRange.start && bookingDate <= effectiveDateRange.end) {
         const monthKey = format(startOfMonth(bookingDate), 'yyyy-MM');
         const current = monthlyData.get(monthKey) || 0;
         monthlyData.set(monthKey, current + 1);
@@ -74,7 +69,7 @@ export function ArrivalsChart({ data, dateRange }: ArrivalsChartProps) {
         month: format(new Date(month + '-01'), 'MMM yyyy', { locale: de }),
         count,
       }));
-  }, [data, dateRange, fullDateRange]);
+  }, [data, dateRange]);
 
   const chartData = {
     labels: monthlyArrivals.map(item => item.month),
