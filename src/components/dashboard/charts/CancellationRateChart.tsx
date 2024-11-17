@@ -46,7 +46,7 @@ export function CancellationRateChart({ data, dateRange }: CancellationRateChart
         const current = monthlyData.get(monthKey) || { total: 0, cancelled: 0 };
         
         current.total += 1;
-        if (booking.isCancelled) {
+        if (booking.cancelled) {
           current.cancelled += 1;
         }
         
@@ -67,7 +67,7 @@ export function CancellationRateChart({ data, dateRange }: CancellationRateChart
     labels: monthlyCancellationRates.map((item) => item.month),
     datasets: [
       {
-        label: 'Stornoquote (%)',
+        label: 'Stornierungsrate (%)',
         data: monthlyCancellationRates.map((item) => item.rate),
         borderColor: 'rgb(255, 99, 132)',
         backgroundColor: 'rgba(255, 99, 132, 0.5)',
@@ -84,17 +84,20 @@ export function CancellationRateChart({ data, dateRange }: CancellationRateChart
       },
       title: {
         display: true,
-        text: 'Stornoquote pro Monat',
+        text: 'Stornierungsrate',
       },
     },
     scales: {
       y: {
+        type: 'linear' as const,
         beginAtZero: true,
         ticks: {
-          callback: (value: number) => `${value.toFixed(1)}%`,
-        },
-      },
-    },
+          callback: function(value: number | string) {
+            return value + '%';
+          }
+        }
+      }
+    }
   };
 
   return (

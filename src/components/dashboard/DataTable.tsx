@@ -71,17 +71,17 @@ export function DataTable({ data }: DataTableProps) {
       {
         accessorKey: 'adults',
         header: 'Erwachsene',
-        sortingFn: 'number',
+        sortingFn: 'alphanumeric',
       },
       {
         accessorKey: 'children',
         header: 'Kinder',
-        sortingFn: 'number',
+        sortingFn: 'alphanumeric',
       },
       {
         accessorKey: 'persons',
         header: 'Personen',
-        sortingFn: 'number',
+        sortingFn: 'alphanumeric',
       },
       {
         accessorKey: 'country',

@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { BookingData } from '../../types/booking';
 import { formatCurrency, formatPercentage, formatNumber } from '../../utils/formatters';
+import { format } from 'date-fns'; // Import hinzugefügt
 import { ArrowDownIcon, ArrowUpIcon, ArrowDownTrayIcon } from '@heroicons/react/20/solid';
 import { differenceInDays } from 'date-fns';
 import { de } from 'date-fns/locale';

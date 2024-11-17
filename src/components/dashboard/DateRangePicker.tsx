@@ -7,19 +7,26 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { de } from 'date-fns/locale';
 
 interface DateRangePickerProps {
-  dateRange: {
-    start: Date | null;
-    end: Date | null;
-  };
-  onDateRangeChange: (dateRange: { start: Date | null; end: Date | null }) => void;
+  startDate: Date | null;
+  endDate: Date | null;
+  onDateChange: (start: Date | null, end: Date | null) => void;
+  comparisonStartDate?: Date | null;
+  comparisonEndDate?: Date | null;
+  onComparisonDateChange?: (start: Date | null, end: Date | null) => void;
+  isYearComparison?: boolean;
   data: BookingData[];
   selectedRegion: string;
   onRegionChange: (region: string) => void;
 }
 
 export function DateRangePicker({
-  dateRange,
-  onDateRangeChange,
+  startDate,
+  endDate,
+  onDateChange,
+  comparisonStartDate,
+  comparisonEndDate,
+  onComparisonDateChange,
+  isYearComparison = false,
   data,
   selectedRegion,
   onRegionChange,
@@ -50,13 +57,13 @@ export function DateRangePicker({
                 Von
               </label>
               <DatePicker
-                selected={dateRange.start}
+                selected={startDate}
                 onChange={(date) =>
-                  onDateRangeChange({ ...dateRange, start: date })
+                  onDateChange(date, endDate)
                 }
                 selectsStart
-                startDate={dateRange.start}
-                endDate={dateRange.end}
+                startDate={startDate}
+                endDate={endDate}
                 minDate={minDate}
                 locale={de}
                 dateFormat="dd.MM.yyyy"
@@ -71,14 +78,14 @@ export function DateRangePicker({
                 Bis
               </label>
               <DatePicker
-                selected={dateRange.end}
+                selected={endDate}
                 onChange={(date) =>
-                  onDateRangeChange({ ...dateRange, end: date })
+                  onDateChange(startDate, date)
                 }
                 selectsEnd
-                startDate={dateRange.start}
-                endDate={dateRange.end}
-                minDate={dateRange.start}
+                startDate={startDate}
+                endDate={endDate}
+                minDate={startDate}
                 maxDate={maxDate}
                 locale={de}
                 dateFormat="dd.MM.yyyy"
@@ -116,11 +123,11 @@ export function DateRangePicker({
         </div>
 
         {/* Reset Button */}
-        {(dateRange.start || dateRange.end || selectedRegion !== 'Alle Regionen') && (
+        {(startDate || endDate || selectedRegion !== 'Alle Regionen') && (
           <div className="lg:ml-auto">
             <button
               onClick={() => {
-                onDateRangeChange({ start: null, end: null });
+                onDateChange(null, null);
                 onRegionChange('Alle Regionen');
               }}
               className="w-full lg:w-auto px-4 py-2 text-sm text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-md transition-colors flex items-center justify-center space-x-1"

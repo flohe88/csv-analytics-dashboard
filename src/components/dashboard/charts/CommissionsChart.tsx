@@ -104,26 +104,31 @@ export function CommissionsChart({ data, dateRange }: CommissionsChartProps) {
       },
       title: {
         display: true,
-        text: 'Provisionen pro Monat',
+        text: 'Provisionen',
       },
       tooltip: {
         callbacks: {
-          label: (context: any) => formatCurrency(context.raw),
-        },
-      },
+          label: function(context: any) {
+            return formatCurrency(context.raw);
+          }
+        }
+      }
     },
     scales: {
       y: {
+        type: 'linear' as const,
         beginAtZero: true,
         title: {
           display: true,
-          text: 'Provisionen (€)',
+          text: 'Provision in €'
         },
         ticks: {
-          callback: (value: number) => formatCurrency(value),
-        },
-      },
-    },
+          callback: function(value: number | string) {
+            return formatCurrency(Number(value));
+          }
+        }
+      }
+    }
   };
 
   return (
